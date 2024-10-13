@@ -12,9 +12,7 @@ const mockSurplusItems = [
   { id: 3, name: "Eggs", quantity: 200, expirationDate: "2024-10-20" }
 ];
 
-
 // Fetch user data and determine if the user is a charity
-
 async function fetchUserData(userEmail: string) {
   await connectToDB();
 
@@ -45,7 +43,7 @@ async function StreamlitAppWithSidebar() {
   return (
     <div className="flex h-screen w-full">
       {/* Left Half: Sidebar and User/Business Info */}
-      <div className="w-1/2 bg-gray-800 text-white p-6 overflow-y-auto">
+      <div className="w-1/3 bg-gray-800 text-white p-6 overflow-y-auto">
         <h3 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">User Information</h3>
         <div className="flex flex-col items-center">
           {profileImageUrl ? (
@@ -85,7 +83,7 @@ async function StreamlitAppWithSidebar() {
       {/* Right Half: Streamlit App */}
       <div className="w-1/2">
         <iframe
-          src="https://scaling-succotash-x5vx7vxv747hp7j9-8501.app.github.dev/" // Replace with your Streamlit app URL
+          src="http://localhost:8501" // Replace with your Streamlit app URL
           className="w-full h-full border-none"
           title="Streamlit App"
         />
@@ -97,26 +95,13 @@ async function StreamlitAppWithSidebar() {
         <form>
           <ul className="space-y-4">
             {mockSurplusItems.map((item) => (
-              <li key={item.id} className="bg-gray-700 p-4 rounded shadow-md">
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox h-5 w-5 text-blue-600"
-                  />
-                  <span className="text-sm font-semibold">{item.name}</span>
-                </label>
-                <p className="text-xs">Quantity: {item.quantity}</p>
-                <p className="text-xs text-red-500">Expires on: {item.expirationDate}</p>
+              <li key={item.id} className="bg-gray-700 p-4 rounded-lg">
+                <p><strong>{item.name}</strong></p>
+                <p>Quantity: {item.quantity}</p>
+                <p>Expiration Date: {item.expirationDate}</p>
               </li>
             ))}
           </ul>
-          {/* Add the Donate button at the end of the checklist */}
-          <button
-            type="button"
-            className="mt-6 w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-          >
-            Donate
-          </button>
         </form>
       </div>
     </div>

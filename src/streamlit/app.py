@@ -6,7 +6,7 @@ import os
 import plotly.express as px
 from datetime import datetime, timedelta
 
-# Title of the 
+# Title of the Streamlit app
 st.title("Inventory Management Dashboard")
 
 # Load environment variables from .env file
@@ -32,10 +32,8 @@ def fetch_user_data():
         st.error(f"Error connecting to MongoDB: {e}")
         return []
 
-
 # Fetch user data
 user_data = fetch_user_data()
-
 
 # Define the directory where your CSV files are located
 data_directory = './data'  # Replace with your actual directory
@@ -63,9 +61,6 @@ pivot_daily_summary = all_surplus_data.pivot_table(index='Date', columns='Catego
 
 # Streamlit app
 st.title("Daily Surplus Amount by Category")
-
-# Create a pivot table for daily surplus
-pivot_daily_summary = all_surplus_data.pivot_table(index='Date', columns='Category', values='Surplus', aggfunc='sum', fill_value=0)
 
 # Get the last 14 days of data for filtering
 last_14_days = datetime.now() - timedelta(days=14)
