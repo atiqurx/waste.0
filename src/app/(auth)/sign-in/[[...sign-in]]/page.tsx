@@ -9,12 +9,12 @@ export default function SignUpPage() {
         <div className="flex flex-col justify-center items-start p-8">
           <Image
             src="/assets/logo.png" // Replace with the path to your logo
-            alt="wase.0 Logo"
+            alt="waste.0 Logo"
             width={150}
             height={150}
             className="mb-8"
           />
-          <h1 className="text-5xl font-bold text-green-800 mb-4">Welcome to wase.0</h1>
+          <h1 className="text-5xl font-bold text-green-800 mb-4">Welcome to waste.0</h1>
           <p className="text-lg text-gray-700">
             Optimize grocery orders and reduce food waste with the power of AI. Donate surplus food to local charities before it expires, and help make the world a better place.
           </p>

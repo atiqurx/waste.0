@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
 import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 # Title of the Streamlit app
 st.title("Inventory Management Dashboard")
@@ -74,6 +72,7 @@ for filename in os.listdir(data_directory):
         if 'Category' in csv_data.columns and 'Surplus' in csv_data.columns:
             all_surplus_data = pd.concat([all_surplus_data, csv_data[['Date', 'Category', 'Surplus']]], ignore_index=True)
 
+
 # Create a pivot table for daily surplus
 pivot_daily_summary = all_surplus_data.pivot_table(index='Date', columns='Category', values='Surplus', aggfunc='sum', fill_value=0)
 
@@ -123,3 +122,27 @@ fig.update_layout(
 
 # Display the Plotly chart
 st.plotly_chart(fig, use_container_width=True)
+# Create a Plotly bar chart
+fig = px.bar(total_daily_surplus_df,  # Pass the DataFrame
+             x='Date', 
+             y='Total Surplus', 
+             title="Historical Surplus Trend",
+             labels={'Total Surplus': 'Surplus Amount'},
+             height=400)
+
+# Customize layout
+max_value = filtered_total_data.max()  # Get the maximum value for y-axis scaling
+fig.update_layout(
+    yaxis=dict(range=[0, max_value * 1.5]),  # Add space above max value
+    xaxis_title='Date',                       # X-axis title
+    yaxis_title='Total Surplus Amount',       # Y-axis title
+    xaxis_tickangle=-45,                      # Rotate x-axis labels
+    plot_bgcolor='rgba(255, 255, 255, 0)',   # Set background color (transparent in this case)
+    title_font=dict(size=20),                 # Title font size
+    margin=dict(l=40, r=40, t=40, b=40)       # Adjust margins around the chart
+)
+
+fig.update_traces(marker_color='#f87315')
+# Display the Plotly chart
+st.plotly_chart(fig, use_container_width=True)
+>>>>>>> my-feature-branch
