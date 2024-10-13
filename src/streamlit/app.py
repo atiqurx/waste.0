@@ -1,16 +1,16 @@
 import streamlit as st
 import pandas as pd
 from pymongo import MongoClient
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 import os
-import plotly.express as px
 from datetime import datetime, timedelta
+import plotly.express as px
 
 # Title of the Streamlit app
 st.title("Inventory Management Dashboard")
 
 # Load environment variables from .env file
-# load_dotenv()
+load_dotenv()
 
 # Fetch user data from MongoDB
 def fetch_user_data():
@@ -18,28 +18,44 @@ def fetch_user_data():
     
     if mongo_api_url is None:
         st.warning("MONGODB_URL is not set. Please check your .env file.")
-        return []
+        return [], []
 
     # Connect to the MongoDB database
     try:
         client = MongoClient(mongo_api_url)
         db = client['test']  # Connect to the 'test' database
         collection = db['businesses']  # Access the 'businesses' collection
+        predictions = db['predictions']
+
+        predictions_data = list(predictions.find())
 
         business_data = list(collection.find())  # Fetch all business data
-        return business_data
+        return business_data, predictions_data
     except Exception as e:
         st.error(f"Error connecting to MongoDB: {e}")
-        return []
+        return [], []
 
 # Fetch user data
-user_data = fetch_user_data()
+business_data, predictions_data = fetch_user_data()
 
 # Define the directory where your CSV files are located
 data_directory = './data'  # Replace with your actual directory
 
 # Initialize an empty DataFrame to hold surplus data
 all_surplus_data = pd.DataFrame()
+
+# Extract optimalOrder from the first business record (assuming it's there)
+if business_data:
+    optimal_order = predictions_data[0].get('optimalOrder', {})
+else:
+    optimal_order = {}
+
+# Convert optimalOrder data to a pandas DataFrame
+optimal_order_df = pd.DataFrame(list(optimal_order.items()), columns=['Category', 'Optimal Order'])
+
+# Optimal Order Bar Chart
+st.subheader("Optimal Order by Category")
+st.bar_chart(optimal_order_df.set_index('Category'))
 
 # Loop through all CSV files in the directory
 for filename in os.listdir(data_directory):
@@ -56,51 +72,44 @@ for filename in os.listdir(data_directory):
         if 'Category' in csv_data.columns and 'Surplus' in csv_data.columns:
             all_surplus_data = pd.concat([all_surplus_data, csv_data[['Date', 'Category', 'Surplus']]], ignore_index=True)
 
+
 # Create a pivot table for daily surplus
 pivot_daily_summary = all_surplus_data.pivot_table(index='Date', columns='Category', values='Surplus', aggfunc='sum', fill_value=0)
 
+# Sum the surplus amounts across all categories for each day
+total_daily_surplus = pivot_daily_summary.sum(axis=1)
+
 # Streamlit app
-st.title("Daily Surplus Amount by Category")
+# st.text("Comparing this period's surplus with the previous month shows a.\n Investigate the factors contributing to this change for better decision-making.")
 
 # Get the last 14 days of data for filtering
 last_14_days = datetime.now() - timedelta(days=14)
-filtered_data = pivot_daily_summary[pivot_daily_summary.index >= last_14_days]
+filtered_total_data = total_daily_surplus[total_daily_surplus.index >= last_14_days]
 
-# Select categories to display
-categories = pivot_daily_summary.columns.tolist()  # Use full data categories
-selected_categories = st.multiselect("Select Categories", categories, default=categories)  # Allow multiple selections
+# Convert the total_daily_surplus Series to a DataFrame
+total_daily_surplus_df = filtered_total_data.reset_index()  # Reset index to convert Series to DataFrame
+total_daily_surplus_df.columns = ['Date', 'Total Surplus']  # Rename columns
 
-# Filter the surplus data based on selected categories
-if selected_categories:
-    filtered_surplus_summary = filtered_data[selected_categories]
-else:
-    filtered_surplus_summary = filtered_data  # Show all if none selected
+# Create a Plotly bar chart
+fig = px.bar(total_daily_surplus_df,  # Pass the DataFrame
+             x='Date', 
+             y='Total Surplus', 
+             title="Historical Surplus Trend",
+             labels={'Total Surplus': 'Surplus Amount'},
+             height=400)
 
-# Convert index (dates) to string format for better readability
-filtered_surplus_summary.index = filtered_surplus_summary.index.strftime('%d %B')
-
-# Show only the last N rows to avoid clustering (e.g., last 10)
-num_rows_to_display = 50
-subset_data = filtered_surplus_summary.tail(num_rows_to_display)
-
-# Display the subset of data in a scrollable table
-st.dataframe(subset_data, height=300)  # You can adjust the height as needed
-
-# Create a scrollable area chart using Plotly
-fig = px.line(pivot_daily_summary, x=pivot_daily_summary.index, y=pivot_daily_summary.columns,
-              labels={'value': 'Surplus Amount', 'variable': 'Category'}, title='Daily Surplus Amount by Category')
-
-# Update the layout for better readability
+# Customize layout
+max_value = filtered_total_data.max()  # Get the maximum value for y-axis scaling
 fig.update_layout(
-    xaxis_title='Date',
-    yaxis_title='Surplus Amount',
-    yaxis=dict(range=[0, pivot_daily_summary.max().max() + 30]),  # Set y-axis to start from 0
-    xaxis=dict(
-        range=[pivot_daily_summary.index.min(), pivot_daily_summary.index.max()],  # Set the x-axis range to include all dates
-    ),
-    xaxis_tickangle=-45,
-    hovermode="x unified"  # Optional: show a unified hover effect
+    yaxis=dict(range=[0, max_value * 1.5]),  # Add space above max value
+    xaxis_title='Date',                       # X-axis title
+    yaxis_title='Total Surplus Amount',       # Y-axis title
+    xaxis_tickangle=-45,                      # Rotate x-axis labels
+    plot_bgcolor='rgba(255, 255, 255, 0)',   # Set background color (transparent in this case)
+    title_font=dict(size=20),                 # Title font size
+    margin=dict(l=40, r=40, t=40, b=40)       # Adjust margins around the chart
 )
 
-# Display the Plotly chart with horizontal scrolling
+fig.update_traces(marker_color='#f87315')
+# Display the Plotly chart
 st.plotly_chart(fig, use_container_width=True)

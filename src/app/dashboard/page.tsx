@@ -43,8 +43,8 @@ async function StreamlitAppWithSidebar() {
   return (
     <div className="flex h-screen w-full">
       {/* Left Half: Sidebar and User/Business Info */}
-      <div className="w-1/3 bg-gray-800 text-white p-6 overflow-y-auto">
-        <h3 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">User Information</h3>
+      <div className="w-1/5 text-black p-6 overflow-y-auto">
+        <h3 className="text-xl font-bold mb-4 pb-2">User Information</h3>
         <div className="flex flex-col items-center">
           {profileImageUrl ? (
             <Image
@@ -58,7 +58,7 @@ async function StreamlitAppWithSidebar() {
             <div className="w-20 h-20 bg-gray-600 rounded-full mb-4" />
           )}
           <p className="text-lg font-semibold">{user?.fullName || "No Name"}</p>
-          <p className="text-sm text-gray-400">{userEmail}</p>
+          <p className="text-sm text-black">{userEmail}</p>
         </div>
 
         {/* Conditionally render business information if the user is a charity */}
@@ -67,7 +67,7 @@ async function StreamlitAppWithSidebar() {
             <h4 className="text-lg font-semibold mb-2">Nearby Businesses</h4>
             <div className="space-y-4">
               {allBusinesses && allBusinesses.map((business: any) => (
-                <div key={business._id} className="border border-gray-700 p-4 rounded-lg bg-gray-700">
+                <div key={business._id} className="border border-orange-400 p-4 rounded-lg">
                   <p><strong>Username:</strong> {business.name}</p>
                   <p><strong>Email:</strong> {business.email}</p>
                   <p><strong>Phone Number:</strong> {business.phone || "N/A"}</p>
@@ -80,8 +80,8 @@ async function StreamlitAppWithSidebar() {
         )}
       </div>
 
-      {/* Right Half: Streamlit App */}
-      <div className="w-1/2">
+      Right Half: Streamlit App
+      <div className="w-5/6">
         <iframe
           src="http://localhost:8501" // Replace with your Streamlit app URL
           className="w-full h-full border-none"
@@ -90,12 +90,12 @@ async function StreamlitAppWithSidebar() {
       </div>
 
       {/* Right Sidebar for Surplus List */}
-      <div className="w-80 bg-gray-800 text-white p-6 overflow-y-auto">
-        <h3 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Surplus List</h3>
+      {/* <div className="w-1/4 text-black p-6 overflow-y-auto">
+        <h3 className="text-xl font-bold mb-4 pb-2">Surplus List</h3>
         <form>
           <ul className="space-y-4">
             {mockSurplusItems.map((item) => (
-              <li key={item.id} className="bg-gray-700 p-4 rounded-lg">
+              <li key={item.id} className="bg-white p-4 rounded-lg">
                 <p><strong>{item.name}</strong></p>
                 <p>Quantity: {item.quantity}</p>
                 <p>Expiration Date: {item.expirationDate}</p>
@@ -103,7 +103,7 @@ async function StreamlitAppWithSidebar() {
             ))}
           </ul>
         </form>
-      </div>
+      </div> */}
     </div>
   );
 }
