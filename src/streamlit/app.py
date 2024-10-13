@@ -38,7 +38,7 @@ user_data = fetch_user_data()
 
 
 # Define the directory where your CSV files are located
-data_directory = './data'  # Replace with your actual directory
+data_directory = os.path.abspath('./src/streamlit/data')
 
 # Initialize an empty DataFrame to hold surplus data
 all_surplus_data = pd.DataFrame()
