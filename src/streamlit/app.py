@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from pymongo import MongoClient
+# from pymongo import MongoClient
 # from dotenv import load_dotenv
 import os
 import plotly.express as px
@@ -13,28 +13,28 @@ st.title("Inventory Management Dashboard")
 # load_dotenv()
 
 # Fetch user data from MongoDB
-def fetch_user_data():
-    mongo_api_url = os.getenv("MONGODB_URL")
+# def fetch_user_data():
+#     mongo_api_url = os.getenv("MONGODB_URL")
     
-    if mongo_api_url is None:
-        st.warning("MONGODB_URL is not set. Please check your .env file.")
-        return []
+#     if mongo_api_url is None:
+#         st.warning("MONGODB_URL is not set. Please check your .env file.")
+#         return []
 
-    # Connect to the MongoDB database
-    try:
-        client = MongoClient(mongo_api_url)
-        db = client['test']  # Connect to the 'test' database
-        collection = db['businesses']  # Access the 'businesses' collection
+#     # Connect to the MongoDB database
+#     try:
+#         client = MongoClient(mongo_api_url)
+#         db = client['test']  # Connect to the 'test' database
+#         collection = db['businesses']  # Access the 'businesses' collection
 
-        business_data = list(collection.find())  # Fetch all business data
-        return business_data
-    except Exception as e:
-        st.error(f"Error connecting to MongoDB: {e}")
-        return []
+#         business_data = list(collection.find())  # Fetch all business data
+#         return business_data
+#     except Exception as e:
+#         st.error(f"Error connecting to MongoDB: {e}")
+#         return []
 
 
-# Fetch user data
-user_data = fetch_user_data()
+# # Fetch user data
+# user_data = fetch_user_data()
 
 
 # Define the directory where your CSV files are located
