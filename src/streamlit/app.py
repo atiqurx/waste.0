@@ -79,6 +79,9 @@ pivot_daily_summary = all_surplus_data.pivot_table(index='Date', columns='Catego
 # Sum the surplus amounts across all categories for each day
 total_daily_surplus = pivot_daily_summary.sum(axis=1)
 
+# Streamlit app
+# st.text("Comparing this period's surplus with the previous month shows a.\n Investigate the factors contributing to this change for better decision-making.")
+
 # Get the last 14 days of data for filtering
 last_14_days = datetime.now() - timedelta(days=14)
 filtered_total_data = total_daily_surplus[total_daily_surplus.index >= last_14_days]
@@ -87,41 +90,6 @@ filtered_total_data = total_daily_surplus[total_daily_surplus.index >= last_14_d
 total_daily_surplus_df = filtered_total_data.reset_index()  # Reset index to convert Series to DataFrame
 total_daily_surplus_df.columns = ['Date', 'Total Surplus']  # Rename columns
 
-# Create a combined Plotly figure with subplots
-fig = make_subplots(rows=1, cols=2, 
-                    subplot_titles=("Total Surplus by Date", "Optimal Order by Category"),
-                    horizontal_spacing=0.1)  # Set horizontal spacing
-
-# Add Total Surplus bar chart to the first subplot
-fig.add_trace(
-    go.Bar(x=total_daily_surplus_df['Date'], 
-           y=total_daily_surplus_df['Total Surplus'], 
-           name='Total Surplus', 
-           marker_color='#f87315'),
-    row=1, col=1
-)
-
-# Add Optimal Order bar chart to the second subpl
-fig.add_trace(
-    go.Bar(x=optimal_order_df['Category'], 
-           y=optimal_order_df['Optimal Order'], 
-           name='Optimal Order', 
-           marker_color='#1f77b4'),
-    row=1, col=2
-)
-
-# Update layout for the combined figure
-fig.update_layout(
-    title_text="Inventory Management Dashboard",
-    height=400,  # Adjust height to fit both charts
-    xaxis_title='Date',
-    yaxis_title='Amount',
-    barmode='group',  # Group bar charts together
-    title_font=dict(size=20),
-)
-
-# Display the Plotly chart
-st.plotly_chart(fig, use_container_width=True)
 # Create a Plotly bar chart
 fig = px.bar(total_daily_surplus_df,  # Pass the DataFrame
              x='Date', 
@@ -145,4 +113,3 @@ fig.update_layout(
 fig.update_traces(marker_color='#f87315')
 # Display the Plotly chart
 st.plotly_chart(fig, use_container_width=True)
->>>>>>> my-feature-branch
