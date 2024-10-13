@@ -102,7 +102,7 @@ fig.add_trace(
     row=1, col=1
 )
 
-# Add Optimal Order bar chart to the second subplot
+# Add Optimal Order bar chart to the second subpl
 fig.add_trace(
     go.Bar(x=optimal_order_df['Category'], 
            y=optimal_order_df['Optimal Order'], 
